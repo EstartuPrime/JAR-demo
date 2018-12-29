@@ -274,7 +274,7 @@ void ledDemo()
 void printBar(uint8_t height)
 {
   if (height > 8) { height = 8; }
-  static const char barChars[] = {' ', 0, 1, 2, 3, 4, 5, 6, 255};
+  static const char barChars[] = {' ', 0, 1, 2, 3, 4, 5, 6, -128}; // char is signed int, in binary 255 is -128
   lcd.print(barChars[height]);
 }
 
@@ -288,7 +288,6 @@ void lineSensorDemo()
   lcd.print('C');
 
   uint16_t lineSensorValues[3];
-  char c;
 
   while (buttonMonitor() != 'B')
   {
