@@ -287,7 +287,7 @@ void lineSensorDemo()
   lcd.gotoXY(6, 1);
   lcd.print('C');
 
-  uint16_t lineSensorValues[3];
+  unsigned int lineSensorValues[3];
 
   while (buttonMonitor() != 'B')
   {
