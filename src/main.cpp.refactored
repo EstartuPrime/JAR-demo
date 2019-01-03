@@ -8,23 +8,9 @@ To use this demo program, you will need to have the LCD connected
 to the Zumo 32U4.  If you cannot see any text on the LCD,
 try rotating the contrast potentiometer. */
 
-#include <Wire.h>
-#include <Zumo32U4.h>
+#include <jarGlobals.h>
 #include <jarButton.h>
 #include <jarMenu.h>
-
-JarButton jb;
-Zumo32U4LCD lcd;
-// Zumo32U4Buzzer buzzer;
-// Zumo32U4ButtonA buttonA;
-// Zumo32U4ButtonB buttonB;
-// Zumo32U4ButtonC buttonC;
-Zumo32U4LineSensors lineSensors;
-Zumo32U4ProximitySensors proxSensors;
-LSM303 compass;
-L3G gyro;
-Zumo32U4Motors motors;
-Zumo32U4Encoders encoders;
 
 // A couple of simple tunes, stored in program space.
 const char beepBrownout[] PROGMEM = "<c8";
@@ -147,7 +133,7 @@ void ledDemo()
 
   uint8_t state = 3;
   static uint16_t lastUpdateTime = millis() - 2000;
-  while (jb.monitor() != 'B')
+  while (JarButton::monitor() != 'B')
   {
     if ((uint16_t)(millis() - lastUpdateTime) >= 500)
     {
@@ -158,7 +144,7 @@ void ledDemo()
       switch (state)
       {
       case 0:
-        jb.buzzer.play("c32");
+        buzzer.play("c32");
         lcd.gotoXY(0, 0);
         lcd.print(F("Red   "));
         ledRed(1);
@@ -167,7 +153,7 @@ void ledDemo()
         break;
 
       case 1:
-        jb.buzzer.play("e32");
+        buzzer.play("e32");
         lcd.gotoXY(0, 0);
         lcd.print(F("Green"));
         ledRed(0);
@@ -176,7 +162,7 @@ void ledDemo()
         break;
 
       case 2:
-        jb.buzzer.play("g32");
+        buzzer.play("g32");
         lcd.gotoXY(0, 0);
         lcd.print(F("Yellow"));
         ledRed(0);
@@ -195,7 +181,7 @@ void ledDemo()
 void printBar(uint8_t height)
 {
   if (height > 8) { height = 8; }
-  static const char barChars[] = {' ', 0, 1, 2, 3, 4, 5, 6, -128};
+  static const char barChars[] = {' ', 0, 1, 2, 3, 4, 5, 6, -128}; // char is signed int, in binary 255 is -128
   lcd.print(barChars[height]);
 }
 
@@ -210,9 +196,9 @@ void lineSensorDemo()
 
   unsigned int lineSensorValues[3];
 
-  while (jb.monitor() != 'B')
+  while (JarButton::monitor() != 'B')
   {
-    bool emittersOff = jb.bIsPressed();
+    bool emittersOff = buttonC.isPressed();
 
     if (emittersOff)
     {
@@ -251,7 +237,7 @@ void proxSensorDemo()
   loadCustomCharactersBarGraph();
   displayBackArrow();
 
-  while (jb.monitor() != 'B')
+  while (JarButton::monitor() != 'B')
   {
     bool proxLeftActive = proxSensors.readBasicLeft();
     bool proxFrontActive = proxSensors.readBasicFront();
@@ -333,7 +319,7 @@ void inertialDemo()
   lcd.gotoXY(4, 1);
   lcd.print(F("Up"));
 
-  while (jb.monitor() != 'B')
+  while (JarButton::monitor() != 'B')
   {
     compass.read();
     gyro.read();
@@ -368,7 +354,7 @@ void motorDemoHelper(bool showEncoders)
   int16_t encCountsLeft = 0, encCountsRight = 0;
   char buf[4];
 
-  while (jb.monitor() != 'B')
+  while (JarButton::monitor() != 'B')
   {
     encCountsLeft += encoders.getCountsAndResetLeft();
     if (encCountsLeft < 0) { encCountsLeft += 1000; }
@@ -406,7 +392,7 @@ void motorDemoHelper(bool showEncoders)
         if (++instructCount == 80) { instructCount = 0; }
       }
 
-      if (jb.aIsPressed())
+      if (buttonA.isPressed())
       {
         if (btnCountA < 4)
         {
@@ -431,7 +417,7 @@ void motorDemoHelper(bool showEncoders)
         leftSpeed -= 30;
       }
 
-      if (jb.cIsPressed())
+      if (buttonC.isPressed())
       {
         if (btnCountC < 4)
         {
@@ -460,11 +446,6 @@ void motorDemoHelper(bool showEncoders)
       rightSpeed = constrain(rightSpeed, 0, 400);
 
       motors.setSpeeds(leftSpeed * leftDir, rightSpeed * rightDir);
-
-      lcd.gotoXY(1,1);
-      lcd.print(btnCountA);
-      lcd.gotoXY(6,1);
-      lcd.print(btnCountC);
 
       // Display arrows pointing the appropriate direction
       // (solid if the motor is running, chevrons if not).
@@ -504,20 +485,8 @@ void encoderDemo()
   motorDemoHelper(true);
 }
 
-/*
-T|  4|--c-c-c-c----------c---c-
-A|  3|-----------G---A-----A---
-B|  
-N|  4|--c---c---D-D-d-D-d--d-c---------
-A|  3|----A---A----------------A-G-A-g-
-B|  
-B|  4|--c---c---D-D-d-D-d--d-c---c-D-f-
-E|  3|----A---A----------------A-------
-R|  
---c-c-c-c--<G---<A---c-<A-c---c-<A-c-<A-D-D-d-D-d--d-c-<A-<G-<A-<g---c-<A-c-<A-D-D-d-D-d--d-c-<A-c-D-f-
-*/
 const char fugue[] PROGMEM =
-  "! V10T120O5L16agafaea dac+adaea fa<aa<bac#a dac#adaea f"
+  "! T120O5L16agafaea dac+adaea fa<aa<bac#a dac#adaea f"
   "O6dcd<b-d<ad<g d<f+d<gd<ad<b- d<dd<ed<f+d<g d<f+d<gd<ad"
   "L8MS<b-d<b-d MLe-<ge-<g MSc<ac<a MLd<fd<f O5MSb-gb-g"
   "ML>c#e>c#e MS afaf ML gc#gc# MS fdfd ML e<b-e<b-"
@@ -538,7 +507,7 @@ void musicDemo()
   uint8_t fugueTitlePos = 0;
   uint16_t lastShiftTime = millis() - 2000;
 
-  while (jb.monitor() != 'B')
+  while (JarButton::monitor() != 'B')
   {
     // Shift the song title to the left every 250 ms.
     if ((uint16_t)(millis() - lastShiftTime) > 250)
@@ -559,9 +528,9 @@ void musicDemo()
       }
     }
 
-    if (!jb.buzzer.isPlaying())
+    if (!buzzer.isPlaying())
     {
-      jb.buzzer.playFromProgramSpace(fugue);
+      buzzer.playFromProgramSpace(fugue);
     }
   }
 }
@@ -575,7 +544,7 @@ void powerDemo()
   uint16_t lastDisplayTime = millis() - 2000;
   char buf[6];
 
-  while (jb.monitor() != 'B')
+  while (JarButton::monitor() != 'B')
   {
     if ((uint16_t)(millis() - lastDisplayTime) > 250)
     {
@@ -605,7 +574,7 @@ JarMenuItem mainMenuItems[] = {
   { "Music", musicDemo },
   { "Power", powerDemo },
 };
-JarMenu mainMenu(mainMenuItems, 8, &lcd);
+JarMenu mainMenu(mainMenuItems, 8);
 
 void setup()
 {
@@ -635,7 +604,7 @@ void setup()
     // (VCC dropped below 4.3 V).
     // Play a special sound and display a note to the user.
 
-    jb.buzzer.playFromProgramSpace(beepBrownout);
+    buzzer.playFromProgramSpace(beepBrownout);
     lcd.clear();
     lcd.print(F("Brownout"));
     lcd.gotoXY(0, 1);
@@ -644,7 +613,7 @@ void setup()
   }
   else
   {
-    jb.buzzer.playFromProgramSpace(beepWelcome);
+    buzzer.playFromProgramSpace(beepWelcome);
   }
 
   lcd.clear();
@@ -671,9 +640,9 @@ void setup()
   lcd.gotoXY(0, 1);
   lcd.print(F("-try it!"));
 
-  while (jb.monitor() != 'B'){}
+  while (JarButton::monitor() != 'B'){}
 
-  jb.buzzer.playFromProgramSpace(beepThankYou);
+  buzzer.playFromProgramSpace(beepThankYou);
   lcd.clear();
   lcd.print(F(" Thank"));
   lcd.gotoXY(0, 1);
