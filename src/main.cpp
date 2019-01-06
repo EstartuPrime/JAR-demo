@@ -15,10 +15,6 @@ try rotating the contrast potentiometer. */
 
 JarButton jb;
 Zumo32U4LCD lcd;
-// Zumo32U4Buzzer buzzer;
-// Zumo32U4ButtonA buttonA;
-// Zumo32U4ButtonB buttonB;
-// Zumo32U4ButtonC buttonC;
 Zumo32U4LineSensors lineSensors;
 Zumo32U4ProximitySensors proxSensors;
 LSM303 compass;
@@ -30,9 +26,6 @@ Zumo32U4Encoders encoders;
 const char beepBrownout[] PROGMEM = "<c8";
 const char beepWelcome[] PROGMEM = ">g32>>c32";
 const char beepThankYou[] PROGMEM = ">>c32>g32";
-const char beepButtonA[] PROGMEM = "!c32";
-const char beepButtonB[] PROGMEM = "!e32";
-const char beepButtonC[] PROGMEM = "!g32";
 
 // Custom characters for the LCD:
 
