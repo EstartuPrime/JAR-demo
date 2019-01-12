@@ -105,13 +105,14 @@ void loadCustomCharactersBarGraph()
   static const char levels[] PROGMEM = {
     0, 0, 0, 0, 0, 0, 0, 63, 63, 63, 63, 63, 63, 63
   };
-  lcd.loadCustomCharacter(levels + 0, 0);  // 1 bar
-  lcd.loadCustomCharacter(levels + 1, 1);  // 2 bars
-  lcd.loadCustomCharacter(levels + 2, 2);  // 3 bars
-  lcd.loadCustomCharacter(levels + 3, 3);  // 4 bars
-  lcd.loadCustomCharacter(levels + 4, 4);  // 5 bars
-  lcd.loadCustomCharacter(levels + 5, 5);  // 6 bars
-  lcd.loadCustomCharacter(levels + 6, 6);  // 7 bars
+  // es wird nur der start-index übergeben und von dort werden immer 8 "linien" gelesen
+  lcd.loadCustomCharacter(levels + 0, 0);  // 1 bar : levels[0- 7]-> [00000001]111111
+  lcd.loadCustomCharacter(levels + 1, 1);  // 2 bars: levels[1- 8]-> 0[00000011]11111
+  lcd.loadCustomCharacter(levels + 2, 2);  // 3 bars: levels[2- 9]-> 00[00000111]1111
+  lcd.loadCustomCharacter(levels + 3, 3);  // 4 bars: levels[3-10]-> 000[00001111]111
+  lcd.loadCustomCharacter(levels + 4, 4);  // 5 bars: levels[4-11]-> 0000[00011111]11
+  lcd.loadCustomCharacter(levels + 5, 5);  // 6 bars: levels[5-12]-> 00000[00111111]1
+  lcd.loadCustomCharacter(levels + 6, 6);  // 7 bars: levels[6-13]-> 000000[01111111]
 }
 
 // Assigns #0-4 to be arrow symbols.
