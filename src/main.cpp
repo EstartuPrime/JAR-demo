@@ -14,6 +14,7 @@ try rotating the contrast potentiometer. */
 #include <jarMenu.h>
 
 JarButton jb;
+
 Zumo32U4LCD lcd;
 Zumo32U4LineSensors lineSensors;
 Zumo32U4ProximitySensors proxSensors;
@@ -105,7 +106,7 @@ void loadCustomCharactersBarGraph()
   static const char levels[] PROGMEM = {
     0, 0, 0, 0, 0, 0, 0, 63, 63, 63, 63, 63, 63, 63
   };
-  // es wird nur der start-index übergeben und von dort werden immer 8 "linien" gelesen
+  // es wird nur der start-index übergeben und ab da werden immer 8 "linien" gelesen
   lcd.loadCustomCharacter(levels + 0, 0);  // 1 bar : levels[0- 7]-> [00000001]111111
   lcd.loadCustomCharacter(levels + 1, 1);  // 2 bars: levels[1- 8]-> 0[00000011]11111
   lcd.loadCustomCharacter(levels + 2, 2);  // 3 bars: levels[2- 9]-> 00[00000111]1111
@@ -419,7 +420,20 @@ void motorDemoHelper(bool showEncoders)
         {
           // Motor isn't running and button was pressed for
           // 200 ms or less, so flip the motor direction.
-          leftDir = -leftDir;
+          // leftDir = -leftDir;
+
+          // start the motor and stop when the encoders read a summized value >900
+          // this is a test if the value 900 is a complete rotation.
+          encCountsLeft = 0;
+          motors.setLeftSpeed(50);
+          while(encCountsLeft < 900) {
+            encCountsLeft += encoders.getCountsAndResetLeft();
+
+            lcd.gotoXY(0, 0);
+            sprintf(buf, "%03d", encCountsLeft);
+            lcd.print(buf);
+          };
+          motors.setLeftSpeed(0);
         }
         btnCountA = 0;
         leftSpeed -= 30;
@@ -444,7 +458,18 @@ void motorDemoHelper(bool showEncoders)
         {
           // Motor isn't running and button was pressed for
           // 200 ms or less, so flip the motor direction.
-          rightDir = -rightDir;
+          // rightDir = -rightDir;
+
+          encCountsRight = 0;
+          motors.setRightSpeed(50);
+          while(encCountsRight < 900) {
+            encCountsRight += encoders.getCountsAndResetRight();
+
+            lcd.gotoXY(5, 0);
+            sprintf(buf, "%03d", encCountsRight);
+            lcd.print(buf);
+          };
+          motors.setRightSpeed(0);
         }
         btnCountC = 0;
         rightSpeed -= 30;
@@ -590,12 +615,12 @@ void powerDemo()
 }
 
 JarMenuItem mainMenuItems[] = {
+  { "Encoders", encoderDemo },
   { "LEDs", ledDemo },
   { "LineSens", lineSensorDemo },
   { "ProxSens", proxSensorDemo },
   { "Inertial", inertialDemo },
   { "Motors", motorDemo },
-  { "Encoders", encoderDemo },
   { "Music", musicDemo },
   { "Power", powerDemo },
 };
@@ -648,31 +673,31 @@ void setup()
 
   delay(1000);
 
-  lcd.clear();
-  lcd.print(F("Demo"));
-  lcd.gotoXY(0, 1);
-  lcd.print(F("Program"));
-  delay(1000);
+  // lcd.clear();
+  // lcd.print(F("Demo"));
+  // lcd.gotoXY(0, 1);
+  // lcd.print(F("Program"));
+  // delay(1000);
 
-  lcd.clear();
-  lcd.print(F("Use B to"));
-  lcd.gotoXY(0, 1);
-  lcd.print(F("select."));
-  delay(1000);
+  // lcd.clear();
+  // lcd.print(F("Use B to"));
+  // lcd.gotoXY(0, 1);
+  // lcd.print(F("select."));
+  // delay(1000);
 
-  lcd.clear();
-  lcd.print(F("Press B"));
-  lcd.gotoXY(0, 1);
-  lcd.print(F("-try it!"));
+  // lcd.clear();
+  // lcd.print(F("Press B"));
+  // lcd.gotoXY(0, 1);
+  // lcd.print(F("-try it!"));
 
-  while (jb.monitor() != 'B'){}
+  // while (jb.monitor() != 'B'){}
 
-  jb.buzzer.playFromProgramSpace(beepThankYou);
-  lcd.clear();
-  lcd.print(F(" Thank"));
-  lcd.gotoXY(0, 1);
-  lcd.print(F("  you!"));
-  delay(1000);
+  // jb.buzzer.playFromProgramSpace(beepThankYou);
+  // lcd.clear();
+  // lcd.print(F(" Thank"));
+  // lcd.gotoXY(0, 1);
+  // lcd.print(F("  you!"));
+  // delay(1000);
 }
 
 // This function prompts the user to choose something from the

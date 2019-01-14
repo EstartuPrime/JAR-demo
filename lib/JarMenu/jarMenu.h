@@ -3,7 +3,6 @@
 class JarMenu
 {
 public:
-  JarMenuItem Item;
   JarMenu(JarMenuItem *items, uint8_t itemCount, Zumo32U4LCD *lcd);
   void lcdUpdate(uint8_t index);
   void action(uint8_t index);
