@@ -19,8 +19,8 @@ void JarMenu::lcdUpdate(uint8_t index)
     this->lcdRef->print(items[index].name);
     this->lcdRef->gotoXY(0, 1);
     this->lcdRef->print(F("\x7f"
-                "A \xa5"
-                "B C\x7e"));
+                          "A \xa5"
+                          "B C\x7e"));
 }
 
 void JarMenu::action(uint8_t index)

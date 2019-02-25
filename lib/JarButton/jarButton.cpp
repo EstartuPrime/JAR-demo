@@ -4,10 +4,6 @@
 #ifndef BUTTON_CPP
 #define BUTTON_CPP
 
-const char beepButtonA[] PROGMEM = "!c32";
-const char beepButtonB[] PROGMEM = "!e32";
-const char beepButtonC[] PROGMEM = "!g32";
-
 Zumo32U4Buzzer buzzer;
 Zumo32U4ButtonA buttonA;
 Zumo32U4ButtonB buttonB;
